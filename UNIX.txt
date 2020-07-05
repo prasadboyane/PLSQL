@@ -1,0 +1,150 @@
+********** Swapping: 
+Unix system V was a pure swapping system.
+used when RAM get filled completely. as CPU works with data in RAM only, RAM management is crucial. 
+If single process need 100 mb and ram is of 64 mb only then it creates virtual memory. 
+Swap space is already reserved space of disk by Kernel Memory manger to handle such cases. 
+To swap a process means to move that entire process out of main memory and to the swap space
+Entire process copies from main menory to swap device. For execution process is swapped from main memory to device.
+
+It cannot handle the memory flexibly.
+carries the disadvantage of a performance penalty, enefficient
+
+********** Paging:
+As swapping inefficient due to swapping all process in and out in one go, Paging comes into picture.
+when active process requires more RAM, then only less recently used Pages are moved to swap space
+
+It CAN handle the memory flexibly.
+efficient
+
+********** chmod
+gv permissions to dir of file 
+chmod 755 for 7 owner, 5 group, 5 public
+read 4
+write 2
+execute 1
+-R: recursively change the permission of file or directory
+
+********** mount and unmount
+generally needs sudo access
+mount : mountss the storage into existing dir and users can access
+unmount opp.
+
+********** tee
+send std input to std output
+Redirects a copy of the input data to the specified file.
+used while creating log fiels
+
+
+
+**********know about the user information in UNIX
+a) Id: displays the active user id with login and group.
+
+b) Last: displays the last login of the user in the system.
+
+c) Who: determines who is logged onto the system.
+
+
+
+
+**********return values of kill() system call
+0: process exits with given PID
+-1: no process with PIC or not allowed to kill
+
+kill -9 is used to forcefully terminate
+kill -9 PID
+
+ps -ef :see PIDs
+
+
+
+**********‘system calls’ and ‘library functions’
+System calls: signal sent from OS to kernel on behalf of user to perform tasks.
+
+Library functions: The set of common functions that are not part of the kernel but is used by the application programs are known as ‘Library functions’.
+
+********** wildcard interpretation
+special kind of characters that represent one or more other characters. 
+eg. Asterisk(*) means one or more characters
+? : can be replaced with one character 
+
+ls -ltr pras*txt
+ls -ltr pras?txt
+
+**********Alias
+
+alias dir ‘Is –sFC’
+When you simple type dir the fires the command
+
+
+********** LINKS
+soft links 
+hard links
+
+
+
+
+********** Blocks in UNIX
+Each logical partitions in Unix are referred to as File system and each file system contains, a ‘boot block’, a ‘super block’,
+Super block is created at the time of creation of file system, contains State of the file system, block size
+
+
+
+********** Path names
+Absolute Pathname: It defines a complete path specifying the location from root (/) dir
+
+
+Relative Pathname: It defines the path from the current working directory where the user is
+
+
+********** How is cmp command different from diff 
+cmp’ command is basically used for byte by byte comparison of two files to determine the first mismatch byte. Displayes first mismatched byte position
+
+diff’ command' determines the changes that are to be performed on the files in order to make the two files identical. 
+
+
+********** Netwrking 
+telnet 127.0.0.1 : remote login as well as for communication
+ping 127.0.0.1:checking connection
+
+netstat: it provides a lot of information like ongoing network connection on the local system and ports, routing tables, interfaces statistics, etc.
+
+********** INODE
+
+whenver file created inside a dir then it has 2 attributes: fie name and inde number Fie name mapped with Inode number.
+Inode table is DS which stored info about each file:
+Location on disk
+size
+acces privilages
+
+********** Variables
+A variable is defined as a character string to which a value is assigned
+To define a shell variable, ‘set’ command is used.
+
+To delete a shell variable, ‘unset’ command is used.
+
+
+
+********** Kernel
+3 parts of OS: Application, shell, kernel (heart)
+does not deal with directly user.
+Interacts with HW
+File mgmt
+Mem mgmt
+Resource mgmt
+
+********** Shell
+3 parts of OS: Application, shell, kernel (heart)
+Shell issues “$” as the command prompt
+UNIX shell serves as an environment to run commands
+For example: $date gives current date n time
+
+types; C , bourne, korn, bourne again
+
+
+********** 'nohup' in UNIX
+“nohup” is a special command that is available to run a process in the background. The process started with ‘nohup' command is not terminating even the user started to log off from the system.
+
+
+
+
+

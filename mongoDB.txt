@@ -1,0 +1,90 @@
+connect to default test Cluster Atlas:
+host: cluster0-shard-00-00-jxeqq.mongodb.net
+port: 27017
+uname: m001-student
+pass: m001-mongodb-basics
+db: admin
+
+mongodb+srv://m001-student:m001-mongodb-basics@cluster0-jxeqq.mongodb.net/test
+
+connect to Atlas Sandbox cluster:
+		mongo "mongodb+srv://sandbox-bmpvk.mongodb.net/test"  --username m001-student --password m001-mongodb-basics
+
+load js in cluster:
+go to that folder in which json id and execute:
+		load("file.js")
+
+insert one document shell:
+		db.movieScratch.insertOne({title:"Star Trek II", year: 1967, imdb:"tt0084654"})
+
+insert mutiple documents shell:
+below will fail due to duplicate docs "_id" field
+
+		db.movieScratch.insertMany(
+		[
+			{
+			"_id":"tt001",
+			"title":"harry potter 1",
+			"year":2001
+			},
+			{
+			"_id":"tt001",
+			"title":"harry potter 1",
+			"year":2001
+			},
+			{
+			"_id":"tt002",
+			"title":"harry potter 2",
+			"year":2002
+			}
+		]
+		)
+
+- insertMany has ordered insert(default) & unordered insert. ordered insert stop when any error comes in any doc. If we want to keep going we can use nordered insert.
+		db.movieScratch.insertMany(
+		[
+			{
+			"_id":"tt001",
+			"title":"harry potter 1",
+			"year":2001
+			},
+			{
+			"_id":"tt001",
+			"title":"harry potter 1",
+			"year":2001
+			},
+			{
+			"_id":"tt002",
+			"title":"harry potter 2",
+			"year":2002
+			}
+		]
+		,
+		{
+			"ordered": false
+		}
+		)
+		
+		
+find to read and filter in shell:
+find 1st elemet of array is Jeff
+			{ "cast.0": "Jeff Bridges" }
+
+find exact match of array
+				db.movies.find({cast: ["jeff", "tim"]})
+			
+find NOT exact match :
+				{genres: "Family"}
+				
+				
+cursor to iterate through result
+					it
+					
+projection reduce network overhead by limiting fields
+
+
+
+logical AND OR
+{$and:[{tripduration:{$exists:true}},{tripduration:null}]}
+
+				

@@ -1,0 +1,464 @@
+********* Introduce yourself
+Name, Education, designatio, Company, exp
+
+Client GP:
+2nd biggest client of Bitwise. US based payment processing company.
+Interesting bussiness of merchant payment auth and proccessing. Takes care of whole process from tranferring Customers bank to Merchants bank or vice versa and charge specific amount to mrechants per transaction as processing fees. Recently accquired Heatland and Launching new cud based product called 'MP' cz f which we get a chance to work on GCP and hoping to get in fortune 500 companies.
+
+Development cycle:
+Review FRD, provide LOE and discuss concerns with OSC, BA
+Start implementaton with PLSQL mostly creating procedures, triggers , Packages and sequences.
+ADHOC requests for enhancements like addin exceptions and Performance tuning using SQL approaches and clauses like bulk collect
+Document the release and possible failure scenarios and KT to support
+5 bussiness days warrenty support
+
+Daily activities:
+Discussing challanges with OSC or BA
+working with PLSQL mostly creating procedures, triggers , Packages and sequences.
+Request of adding exceptions in subprograms like procs.
+Performance tuning using SQL approaches and clauses like bulk collect
+Dynamic sqls and UTL files
+use ETL tools like dmexpress to write business rules
+write UNIX scripts for daily repetative tasks like basic empty file check/ Deay in files/ File format checks - reuired for new phase
+Use Control M to schedule ETL jobs unix scripts
+coordinate with Reporting team for combined modules
+
+
+********* Triggers
+triggers are named blocks used to implicitly execute the the code on occurance of perticular event. just like procs but differ in way they are invoked.
+stored in compiled form
+
+3 parts of trigger:
+1. trigger event
+2. trigger restriction: boolean expression which needs to be True to execute the trigger. used to trigger conditionally.
+eg. execute on insert ONLY IF (t.age > 18) -- this is restriction
+3. Trigger action
+
+Broadly divided into - DDL - DML - System Triggers
+
+Also categorized on the basis of type of triger like - Row/Statement- Before/After - Instead of
+
+uses:
+generate derived columns
+upaate views
+tables audits
+table replicates
+
+Trigger Cascading is the concept we can use.
+
+********* Procedures
+
+reusability.
+Procs is a type subprogrames which is named block in Oracle. 
+Can be invoked as standalone proc, in pkg, in another subprogram.
+May or may not have return keyword. If we use return keyword then it should not have expression or values.
+
+3 parts of Proc:
+Declaration: when we 'CREATE PROCEDURE proc1' do not write 'declare' keyword. In this section we dclare cursors, vars, constants.
+Executable part: Acitons to execute
+Exception handling: this is optional to handle run time exceptions. use PRAGMA_AUTONOMOUS clause.
+
+optionally have parameters.
+parameters can be:
+IN
+OUT
+INOUT
+
+Procedures vs Functions:
+1. Function can be called within proc.	1. Proc cannot be called within function
+2. may or may NOT return value			2. Can return atleast 1 value
+3. Can contain DDL stmt					3. Cannot contain DDL stmt
+
+********* Functions
+Named block in plsql. User-defined functions cannot be used in situations that require an unchanging definition.
+If you are creating an aggregate function, you can specify only one argument.
+
+Functions can have out parameters but then we cannot use those functions in select statements.
+Differes with procedures in declaraionsection, additional code 'return datatype' needs to be specifies and a return value should be provided.
+Cannot return more than 1 value, however we can multiple values can be set to out parameters. or can create 1 object having mutiple type and return that object.
+
+********* EXCEPTIONS
+Run-time errors arise from design faults, coding mistakes, hardware failures. When an error occurs, an exception is raised
+evry prog lang has exception handling mechanism which stops normal processing and returns control to the operating system
+In oracle plsql, execution stops and control transfers to the exception-handling part of your PL/SQL block or subprogram
+a run-time error such as stack overflow or division by zero . With PL/SQL, a mechanism called exception handling lets you "bulletproof" your program so that it can continue operating in the presence of errors.
+
+Retrieving the Error Code and Error Message: SQLCODE and SQLERRM: The functions SQLCODE and SQLERRM are especially useful in the OTHERS handler because they return the Oracle error code and message text. when we use own exepction SQLCODE is 1 and SQLERRM is 'User-Defined exception' always
+
+Advtantages: common exceptions code covers all issues SQL stmts
+improve redability
+eg.ZERO_DIVIDE,TOO_MANY_ROWS,NO_DATA_FOUND
+
+pragma EXCEPTION_INIT: To handle error conditions (typically ORA- messages) that have no predefined name, you must use the OTHERS handler or the pragma EXCEPTION_INIT. A pragma is a compiler directive that is processed at compile time, not at run time.
+In PL/SQL, the pragma EXCEPTION_INIT tells the compiler to associate an exception name with an Oracle error number. That lets you refer to any internal exception by name and to write a specific handler for it. When you see an error stack, or sequence of error messages, the one on top is the one that you can trap and handle.
+
+RAISE_APPLICATION_ERROR: The procedure RAISE_APPLICATION_ERROR lets you issue user-defined ORA- error messages from stored subprograms. That way, you can report errors to your application and avoid returning unhandled exceptions. exception create by raise_app_error can be trapped as any other oracle exception by an application.
+
+********* Collections
+ordered group of elements, all of the same type. Homogenious elements, single dimension structure. Just like arrays in any prog language in which elements can be refer by index numbes.
+Types:
+Persistant: stored strusture as well as data in DB . Varrays, Nested tables
+non persistance: stored data and strusture only for current session. Associative arrays
+
+Varrays: less flexibility than nested tables. elemts number can be chage in runtime
+Nested tables: table inside a table. unbounded can hold any no of elemets. unbounded. accessible in plsql and SQL as well. 
+Associative arrays
+
+
+
+********* Cursors
+to process SQL stmnts a private buffer memory is allocated by execution engine under PGA. A cursor is a pointer to a private that area. Cursor allowes user to name the area and access the data in row-by-row manner. Generally used when user want to perform transformations in singleton fashion. The Data that is stored in the Cursor is called the Active Data Set.
+
+Cursor actions:
+Declare, open(A Cursor is opened and populated by executing the SQL statement defined by the cursor.), Fetch, Close(After data manipulation, close the cursor explicitly.),Deallocate(Finally, delete the cursor definition and release all the system resources associated with the cursor.)
+
+Types: 
+Implicit: Oracle engine opened. 
+Explicit: user-defined cursor is known as an Explicit Cursor
+
+Ref cursors:
+A REF CURSOR is a PL/SQL data type. With this a single cursor vsriable can be associated to multiple select stmts. 
+
+Types:
+Strong ref crsrs:return type is same
+Weak ref cursors: Do not have any return type
+sys refcursor: Oracle built in cursor variable. its weak ref crsr. just like weak ref cursor, just saves time of declaring type and cursor variable.
+
+Characteristics:
+A REF CURSOR refers to a memory address on the database
+A REF CURSOR involves an additional database round-trip. While the REF CURSOR is returned to the client, the actual data is not returned until the client opens the REF CURSOR and requests the data. Note that data is not be retrieved until the user attempts to read it.
+A REF CURSOR is not updatable. The result set represented by the REF CURSOR is read-only.
+A REF CURSOR is not backward scrollable. The data represented by the REF CURSOR is accessed in a forward-only, serial manner.
+
+
+********* PACKAGE
+schema object that groups logically related PL/SQL types, variables, constants, subprograms, cursors, and exceptions. A package is compiled and stored in the database
+2 sections: Specificaiton and pkg body
+
+specification, which declares the public items that can be referenced from outside the package.If the public items include cursors or subprograms, then the package must also have a body
+
+body can also declare and define private items that cannot be referenced from outside the package.
+The AUTHID clause of the package specification determines whether the subprograms and cursors in the package run with the privileges of their definer (the default) or invoker
+The ACCESSIBLE BY clause of the package specification lets you specify a white list of PL/SQL units that can access the package. 
+
+Why to use:
+Modularity:encapsulate logically related types, variables, constants, subprograms, cursors, and exceptions in named PL/SQL modules.
+Hidden Implementation Details: let you share your interface information in the package specification, and hide the implementation details in the package body.
+Added Functionality: public variables and cursors can persist for the life of a session. They can be shared by all subprograms that run in the environment. They let you maintain data across transactions without storing it in the database. 
+Better Performance: The first time you invoke a package subprogram, Oracle Database loads the whole package into memory. Subsequent invocations of other subprograms in same the package require no disk I/O.
+Packages prevent cascading dependencies and unnecessary recompiling. For example, if you change the body of a package function, Oracle Database does not recompile other subprograms that invoke the function, because these subprograms depend only on the parameters and return value that are declared in the specification.
+
+The package body and package specification must be in the same schema.
+
+Package Instantiation and Initialization: When a session references a package item, Oracle Database instantiates the package for that session. Every session that references a package has its own instantiation of that package. like assign values to public variables /constants & initialize pkg body
+
+Package State: If a PL/SQL package declares at least one variable, constant, or cursor, then the package is stateful; otherwise, it is stateless.
+
+
+
+********* Bulk collect
+for rducing context swiching and improve query performance
+conext switch: in plsql block executes, run time engine start processes line by line. PLSQL stsmts by itself but passes all SQL stmnts SQL runtime engine & processed separately and return result. to anf fro hopping control call contet switching. highr hopping loewr performance.
+bulk collect; reduce hopping by collecting all sql stsmts and send to SQL engine in 1 go. Increases effecency and performance
+Disadvantage: Memory overhead- cosumes memory if large no of records hence slows DB. Hence use LIMIT keyword to reduce memory overhead.
+
+fetching data batches from plsql to SQL runtime engine and vice versa called bulk processing
+FORALL is another stmt
+
+Bulk collect can be used with:
+select into
+fetch into
+returning into
+  
+
+
+************ Sequence
+seq is DB object used to generate sequential numbers usually used for PK value generation.
+
+2 main reasons why we use it . if we dont use then programming overhead to  read max value increment it store new one, discard old one.
+2nd in above method, once function of generating next value is processing, exclusive loack is granted and all other users might get impacted accessing same DB. to avaoid this seq are used.
+ 
+syntax create,min value,max value, nocycle
+
+how to call using currval(must be defined in current session) & nextval
+
+Caching is another imp concept to minimize disk reads. But disadv is when system aborts or unexpected shutdown then all values in cache gets flushed.
+
+
+
+************ PT
+1 blocking
+2dealocking
+missing indexs
+indexing
+unnecssary indexes
+fragmentation
+disk IO
+cpu 
+ram
+statistics
+incorrect coding
+open transaction
+wrong execution of plan
+long running queries
+
+
+Optimizing sql queries: 'WITH' instead of 'Ctreate temporary table'. joining all tables at once vs. joining 2 tables and then join 3rd. filtering datasets before joins.
+
+partitions: allows tables/indexes to be subdivided into smaller pieces. which enables us to acces these objects at finer level of granularity.
+partitions created for 2 reasons : Performance and amanagebility
+1. Performance -
+eg. trasaction table AP US UK CA  : select * query need full tbl scan. whne partition by region then it creted diff segment. on disk will hv data stored diff locations as per region. hence when select * then only full partition scan. Improved performance. any tbl bigger than 2 gb needs to hv partitioning.
+2. managebility - 
+eg. we want to udate transactions of only current month all rest all data in read only mode. then partitions based on month . for dbas its easy to manage in terms of , no need to tk regular basis backups for previous months as it is read only. Saves space and bkp/restore activity takes only few time. 
+
+INDEX: db obj. created on column known as index key. btree(defaut) and bitmap.
+data retrival faster. 
+- Btree:
+create index i1 on emp(sal); makes default btree indexes.
+contains of index nodes(left pointer| value | right pointer) and data node (values | rowid (address of record))
+2 table access methods: tables scan & index scan
+Disadv: select is fast but DMLs are slow due to maintaining/updating indexes. takes extra memory. 
+rebuild vs unusable(used when no one accessing data and i want to DML data) 
+
+- Bitmap: stored in BtimapArray for low cardinality columns used when columns have limited distinct values (like gender M/F, marrital status M/UM) 
+needs less space, simple design 
+Its different than partitioning that in partitioning table scan happen and in bitmap index index scan happens
+disadv: DMLs are expensive n slow. cant use in oltp
+create bitmap index on emp(col)
+
+-Function Indexes
+sometimes we use based on functions lke UPPER on index columns. In this case Index wont work & Index scan wont happen. Hence while creating indexes itself, try to apply function to column
+create index i1 on emp(UPPER(col1))
+
+Explain plan:
+representation of access path by oracle optimiser. path stored in libraby cache. if query plan already exist in cache it uses the same.
+read inside out. from inner right to outer.
+- Ful table scans: entire table read upto high watermark(HWM). delete vs truncate. we cn adjust HWM alter table shrink space; cmd. but rowids changes.
+- join methods/order: 
+	Nested loop : full table scan on smaller table and index scan on arger table . best to use when indexes are present on foreign key columns. Bigger tableas driving table.
+	hash join : hash table is built usign smaller table and 2nd tbl hashed and joined . scans bitmap. need PGA memory. good for joining larger tables both. 
+	sort merge join: need to sort the joining key on both table.  Needs PGA memory. suitable when smaller sources. 
+	cartesian join : poor join . every row from 1 tble to every row from another
+- Index access methods
+	index range scans : can return multiple values. eg. when B-tree index find the value=5 & it got the record. still it continues the search there can be multiple records. coz its not unique inex
+	index unique scan : happens when we create unique index. return single value
+	index full scans : reads 1 block at a time
+	index fast full scans : reads multple blocks in 1 cycle
+	index skip scans :
+- Filters
+	
+
+************REST API
+
+old way is : send html and receive html containing unnecessary/heady JS
+With REST: send / receive data object like xml/json
+
+Adv:
+cient sever separate
+no client context/session is stored
+ 
+
+---------AUTONOMOUS_TRANSACTION Pragma
+Pragma: It is comipler directive. Pragmas are processed at compile time, not at run time. They pass information to the compiler.
+Transaction: Whne we apply any modification on data it is termed as transaction.
+Autonomous transaction: Commitin/rollbacking of current transaction, independently withput completingparent transaction.
+and AUTONOMOUS_TRANSACTION pragma is used to behave an subprogram to execute independently. 
+when we use use this, in an subporgram like porc or triggers to commit/ rollack the transaction without completing the parent transaction.
+Parent transaction can see the changes made by trigger only if 'read committed'(default) mode is enabled. Howeevr the changes are not visible when changes are not visible.
+Syntax is :
+PRAGMA AUTONOMOUS_TRANSACTION;
+
+You can apply this pragma to:
+Top-level (not nested) anonymous PL/SQL blocks
+Local, standalone, and packaged functions and procedures
+Methods of a SQL object type
+Database triggers
+
+CREATE OR REPLACE PACKAGE emp_actions AS  -- package specification
+   FUNCTION raise_salary (emp_id NUMBER, sal_raise NUMBER) RETURN NUMBER;
+END emp_actions;
+/
+CREATE OR REPLACE PACKAGE BODY emp_actions AS  -- package body
+-- code for function raise_salary
+   FUNCTION raise_salary (emp_id NUMBER, sal_raise NUMBER) RETURN NUMBER IS
+     PRAGMA AUTONOMOUS_TRANSACTION;
+     new_sal NUMBER(8,2);
+   BEGIN
+     UPDATE employees SET salary = salary + sal_raise WHERE employee_id = emp_id;
+     COMMIT;
+     SELECT salary INTO new_sal FROM employees WHERE employee_id = emp_id;
+     RETURN new_sal;
+   END raise_salary;
+END emp_actions;
+/
+
+
+--------- LISTAGG
+inbuilt agg funtion
+used to aggregate strings from data in columns
+makes it very easy to concatenate strings usign Grouping
+allows to order the elements in the concatenated list
+eg:
+1.	select LISTAGG(loc,',') WITHIN GROUP(order by loc) from dept;
+
+2.select deptno,LISTAGG(ename,'~|*') WITHIN GROUP(order by deptno) from emp group by deptno;
+
+usage:
+Generally at reporting end
+
+
+--------- XMLAGG
+inbuilt agg funtion. takes xml fragments as input from col of table and return whole xml document. xmlforest keyword can be used which converts all paramenter passed to it, to xml fragment
+combines multiple XML elements together in  one cell
+main use of XMLAGG function is concatenating multiple row values of a column into single row.
+
+--------TYPES OF TABLES
+for storing large amt data 2 traditional methods : tables and file system hierarchy. tables contains records and fields. broadly divided in persistant and temporary table.
+based on what type of data ables atored, they are further divided in relational, XMLTYPE table and object type tables (which stored BLOB/CLOB or user defined Varrays/Nested Tables etc)
+relational: contains recs and fields of SQL datatypes.
+XMLTABLE: stored XML data
+object type tables: stores object UDF,Varrays, nested tables etc
+
+Temporary tabes are of 2 types: 
+normal temp tables(wihch can be create with 'WITH' or 'CREATE TEMPRARY TABE' keywrd)
+GTT (global temporary tables) schema is stored but not data . again devided into 2 tables : DELETE ROWS ON COMMIT (once commit, thene delete rows) & PRESERVE ROWS ON COMMIT (data is there for whole session)
+ 
+
+--------- advantages added in 12c
+https://www.orafaq.com/node/2822
+
+
+--------- Dynamic SQL
+programming methodology for generating and running statements at run-time. 
+to increase program flexibility and
+
+Ways to write dynamic SQL:
+1.NDS – Native Dynamic SQL
+2.DBMS_SQL
+
+1.NDS – Native Dynamic SQL:
+easiest way to swite dynamic sql.
+We cannot write DDL in plsql block hence, use 'EXECUTE IMMIDIATE' to create and execute runtim sql
+givwes better poerformance as less complexity
+we nned to know datatype and no of vars we gong to need beforehand.
+Syntax:
+EXECUTE IMMEDIATE(<SQL>)
+[INTO<variable>] --optional
+[USING <bind_variable_value>] --optional
+Cannot use any variable to substitute object names. Multiple bind variables can be used but must have in order.
+
+execute immediate can be used to defined DD stmts in PLSSQL block.
+
+eg:
+https://www.guru99.com/dynamic-sql-pl-sql.html#1
+
+2.DBMS_SQL:
+PL/SQL provide the DBMS_SQL package that allows you to work with dynamic SQL
+same eg:
+https://www.guru99.com/dynamic-sql-pl-sql.html#1
+
+
+--------- UTL_FILE
+UTL_FILE is an Oracle supplied package which is used for file operations (read and write)
+UTL_FILE works for both server and client machine systems. A directory has to be created on the server, which points to the target file. For the files located on the server machine, the actual path can be given while creating the directory. For the files which are located on the client machines, however, the relative path is required along with the client machine name. In addition, the relative file path must be in shared mode with read and write access for the required users.
+
+http://psoug.org/definition/UTL_FILE.htm
+
+---------LOBs
+we can store LOB from oracle 8 onwards.
+3 types;
+blob
+bfile
+clob
+
+first 2 types are to store binary data upto 4 gb (audio/video/imgs), multimedia and third is characte data
+bfile called external lob(stores outside DB) and stores path of that and blob is internal lob (stores inside DB). 
+
+bfilename(dir ob, filename): dir obj is obj in oracle that points to OS directory DBA can create . 
+
+
+
+--------- DBMS INBUILT Packages
+DBMS_ALERT - Provides support for the asynchronous notification of database events.  
+DBMS_DDL - Provides access to some SQL DDL statements from stored procedures, and provides special administration operations not available as DDLs.
+DBMS_DEBUG - A PL/SQL API to the PL/SQL debugger layer, Probe, in the Oracle server.  
+DBMS_DESCRIBE - Describes the arguments of a stored procedure with full name translation and security checking.
+UTL_FILE - Enables your PL/SQL programs to read and write operating system (OS) text files and provides a restricted version of standard OS stream file I/O.
+UTL_HTTP - Enables HTTP callouts from PL/SQL and SQL to access data on the Internet or to call Oracle Web Server Cartridges.  
+
+--------- Oracle Optimizer hints
+for altering execution plan. Hints let you make decisions usually made by the optimizer
+Hints provide a mechanism to instruct the optimizer to choose a certain query execution plan based on the specific criteria.
+
+Types of hints:
+Single table: these hints are specifies on single table. INDEX & use_nl 
+muti table: theese hints are specified in one or more tables. LEADING (Optimzer will know the driving table) 
+query block: these hints operates on single query block. STAR_TANSFORMSTION & UNSET
+statement: hints applied to whole sql stmt. ALL_ROWS
+
+XXXXXXXXX Remains
+My Daily Activities --done
+function returning multiple values using out param --done but cannot use within SQL stmts
+function returning 10 rows 10 cols using sysref cursor -- can but not with sysref. can do with returning obj
+commit in trigger body? --done
+PRAGMA AUTONOMOUS TRASACTION? --done
+analytical functions: rank vs dense rank 
+list agg  --done
+xml agg --done
+xml element --done
+advantages added in 12c
+Dynamic sql: Bind variable --done
+dbms_sql: placeholder bind vars --done
+Sql profiler
+oracle hints: use_nl, 
+execution plan --done
+indexes: bitmap, btree ?. --
+partition tables --
+function based indexes
+intersect operator
+clob vs blob
+ASH and AWR -- interview question
+UTL file example --done
+
+
+
+1.Delete duplicate rows using a single statement and no table creation.
+2.Identify the second highest salary from emp table having salary related data. --done by using row_number()
+3.Statement to determine the oracle version used .
+4.Query to accept a date and return the fist date of the quarter in which the date exists.
+5.Table A has 100 rows, Table B has Zero rows so number of rows returned from  below query
+select a.* from a, b;
+
+
+
+XXXXXXXXX INDEX
+1	Introduce yourself
+2	Triggers --done
+3	Procedures -- done
+4	functions --done
+5	exceptions --done
+6	collection -- done
+7	cursors --done
+8	package --done
+9	bulk collect --done
+10	sequence --done
+11	PT
+12	autonomous transaction Pragma --done
+13	listagg --done
+14	xmlagg --done
+15	types of tables --done
+16	advantage added in 12c
+17	dynamic SQL
+18	UTL_FILE
+19	LOBS
+20	DBMS INBUILD packages
+21	Oracle optimizer hints
+22ReST API
+
+
+
+
+
+
+

@@ -1,0 +1,92 @@
+****************** G cloud shell:
+provides complete env to connect to various resources on cloud.  command-line access which is one per ID. dont need to setup anything. alternative when org dosent allow to install any sw on local machine.
+
+Access From Anywhere, Secure and Fully Authenticated by default, Your Favorite Tools Pre-installed and Up-to-Date, Developer Ready, 5GB of Persistent Disk Storage
+
+gcloud -h : help
+gcloud config --help : man page
+gcloud config --list: props which are currenlty set
+
+Limitation: VM session is not permenantly allocated. All data lost outside $HOME if keep inactive for more than hr.
+Safari in private browser mode is not supported.
+
+
+****************** Google Compute Engine:
+lets you create and run virtual machine instances on Google infrastructure. 
+can create insance by 2 ways 
+1. Console 
+2. gcloud 
+
+Instance life cycle:
+PROVISIONING - Resources are being allocated for the instance. The instance is not running yet.
+STAGING - Resources have been acquired and the instance is being prepared for first boot.
+RUNNING - The instance is booting up or running. You can connect to the instance shortly after it enters this state.
+STOPPING - The instance is being stopped. This can be because a user has made a request to stop the instance or there was a failure. This is a temporary status and the instance will move to TERMINATED once the instance has stopped.
+TERMINATED - A user stopped the instance, or the instance encountered a failure. Start the instance again or delete it.
+
+
+
+****************** CAN HOST A STATIC WEBSITE USING APP Engine
+goto cloud shell > create folder with name of PID 
+> create app.yaml 
+app.yaml : your App Engine app's settings, specifies how URL paths correspond to request handlers and static files. 
+Each service must have an app.yaml file in its root directory. 
+
+> in PID folder make another folder and store all HTML, CSS, JS inside it
+gcloud app deploy --project [PID]
+
+hosted my resume on app engine
+
+
+****************** Google Compute Engine - VM instances
+Compute engine is IaaS.
+High-Performance, Scalable VMs (boot quickly, come with persistent disk storage, and deliver consistent performance).
+Flexible pricing as per specific needs.
+second-level increments, so you only pay for the compute time you use
+An instance is a virtual machine (VM) hosted on Google's infrastructure
+2 ways to create VM instance fisrt is via console and gcloud command:
+
+// CREATE INSTANCE WITH 4 vCPUs and 5 GB MEMORY
+gcloud compute instances create my-vm --custom-cpu 4 --custom-memory 5
+
+// ENABLE PREEMPTIBLE OPTION
+gcloud compute instances create my-vm --zone us-central1-b --preemptible
+
+
+
+****************** Google Cloud Storage
+Buckets: basic containers that hold your data. but unlike directories and folders, you cannot nest buckets. name should be globally-unique name. 
+Bucket labels: key:value metadata pairs that allow you to group your buckets along with other Google Cloud Platform resources such as virtual machine instances.
+Objects: individual pieces of data that you store in Cloud Storage. Objects have two components: object data and object metadata. Object data is typically a file that you want to store in Cloud Storage. Object metadata is a collection of name-value pairs that describe various object qualities.
+Object versions and generation numbers: when you overwrite an object, Cloud Storage deletes the old version and replaces it with a new version. When you enable Object Versioning on your bucket, older versions remain in your bucket when an overwrite or deletion occurs. Each object version is uniquely identified by its generation number. 
+Object immutability: Objects are immutable, which means that an uploaded object cannot change throughout its storage lifetime. An object's storage lifetime is the time between successful object creation (upload) and successful object deletion.
+
+****************** Big Query
+1. Controlling costs
+- do not 'select *' instead data preview button. or select perticukar column
+- LIMIT clause dosent affect amount as full data read.
+- if want to see subset of data for all columns , then Materializing results in a destination table and query that table
+- filter based on partitioning
+- In the CLI, use the bq head command and specify the number of rows to preview.
+- Using the query validator to see how many bytes are read
+- in the CLI, you can use the --dry_run flag to estimate the number of bytes read.
+- set set the 'maximum bytes billed' to limit in show options tab.
+
+1. optimizing query performance
+- Input data and data sources (I/O): How many bytes does your query read? use _PARTITIONTIME pseudo column
+- Communication between nodes (shuffling): How many bytes does your query pass to the next stage? How many bytes does your query pass to each slot?
+- Computation: How much CPU work does your query require?
+- Outputs (materialization): How many bytes does your query write?
+- Query anti-patterns: Are your queries following SQL best practices?
+
+
+
+SQL dialects: standard SQL and legacy SQL
+
+
+
+
+
+
+
+

@@ -1,0 +1,1 @@
+select loc from dept;

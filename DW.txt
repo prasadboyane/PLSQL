@@ -1,0 +1,219 @@
+*********** Schemas
+
+A schema is a collection of database objects, including tables, views, indexes, and synonyms.
+Schema model is methodology of arranging schmea objects and definig relation between them. Star schema is popular.
+
+*********** Star Schema
+
+simple yet powerful.
+entity relationship diagram appears to be a star.
+In centre we have fact tables, surrounded by DIM tables.
+eg sales (fct table) taking lookups with dim tables like, products, customers, currencies, times, channels
+fact tbl is taking lookups with dim tables based on PK & FKs but other dim tables are not dependant on other dim tables.
+fact tbl contains the factual fields ike qtity sold, sales amount, Also it contains DIM SKs like cust_is, Product_id, etc, also it contains DW fields like create_dt, update_dt.
+
+Avd:
+Simple mapping between bussiness entities
+optimized performance for typical star queries
+
+
+
+*********** Snowflake Schema
+little bit complex arch than star schema
+Dim table grouped into multiple tables instead of 1 arge table
+While this saves space, it increases the number of dimension tables and requires more foreign key joins
+
+
+*********** Optimizing Star Queries
+A single column bitmap index should be built on each of the foreign key columns of the fact table. 
+eg.
+SELECT ch.channel_class, c.cust_city, t.calendar_quarter_desc,
+   SUM(s.amount_sold) sales_amount
+FROM sales s, times t, customers c, channels ch
+WHERE s.time_id = t.time_id
+AND   s.cust_id = c.cust_id
+AND   s.channel_id = ch.channel_id
+AND   c.cust_state_province = 'CA'
+AND   ch.channel_desc in ('Internet','Catalog')
+AND   t.calendar_quarter_desc IN ('1999-Q1','1999-Q2')
+GROUP BY ch.channel_class, c.cust_city, t.calendar_quarter_desc;
+
+this query processed in 2 phases:
+First will Oracle engine retrives only those rows for which condin]tion is satisfied
+SELECT ... FROM sales
+WHERE time_id IN
+  (SELECT time_id FROM times 
+   WHERE calendar_quarter_desc IN('1999-Q1','1999-Q2'))
+   AND cust_id IN
+  (SELECT cust_id FROM customers WHERE cust_state_province='CA')
+   AND channel_id IN
+  (SELECT channel_id FROM channels WHERE channel_desc IN('Internet','Catalog'));
+  
+Second, join the resultset to fct table. 
+
+
+The cost-based optimizer should be used
+
+
+
+*********** Data Migration
+From last 2-3 months I ve ben working in release where the goal is migrating historical data from On-Prem to GCP.
+Process:
+Write a sql select script that matched the schema of BQ tables -  need to handle bussinessreq descrepancies like no default dates etc.
+use nzsql command to make a delimited file - no single character delimeter as it can contain in data
+SFTP the file to zone 2 server which has connectivity with GCP - SFTP script
+send and trigger the cloud job to load - curl command with  attrib like filename and batchid
+
+While loading at GCP we used Dataflow ETL, Airflow scheduling, BQ API to dump the data to BQ table
+
+*********** Oracle vs MySQL vs Netezza
+Netezza good for analysis implicit conversion from dates to timestamp etc & Oracle fast low latency
+developer is IBM & Oracle
+Triggers not supported in Netezza.
+Oracle is from 1980s and Netezza is 2000
+Serve side scripts are enabled in both.
+Both are RDBMS
+JDBC ODBC connectivity in both
+nzload nzsql syntax
+
+
+----------------------------------------------
+HIVE
+----------------------------------------------
+*********** what is HIVE : DW tool
+eg FB when exponentially increasign data Oracle cant handle
+semi strustured data RDBMS cant handle
+hence we need to write MR jobs
+but analysts are conf with SQL
+hence HIVE provide  HiveQL lang which internally converts to MR program
+
+Components:
+Shell
+Metastore
+Driver
+Compiler
+Exec engine
+
+No Good for OLTP as does not offer row level insert / updates
+no good for low latency jobs
+
+Good for analysis
+
+*********** Metastore
+
+Central repo
+stores all the metadata like schemas of tables and loacations
+stores mapping between object to table and vice versa
+generally metastros in RDBMS
+can access through service APIS
+
+3 modes:
+embedded :  both metastore service and hive service runs in the same JVM. Derby . 1 cmd hence no PROD
+local: many users can use the metastore at the same time . Hive service and metastore MySQL which runs in a separate JVM
+Remote: HIve service and metastores are on diff machines calls though APIS
+
+
+*********** External and managed tables
+
+create database demo ; --creates DB. creates dir demo.db under /user/hive/warehouse/
+Go to localhost:50070 > browse files > /user/hive/warehouse/
+all the tables shows here are under 'default' DB. (use default;)
+
+
+show databases;
+
+create table student (name string, rollno int, dept string)
+row format delimited
+fields terminated by ',';
+
+load data local inpath '/home/training/Desktop/student';
+
+use demo;
+
+describe extended student; 
+
+
+create external table student (name string, rollno int, dept string)
+row format delimited
+fields terminated by ','
+location '/HiveDtaa';
+
+
+*********** partitioning
+
+---- static or manual
+we load fiels as per partition
+
+create table student (name string, rollno int, dept string)
+partitioned by (state string , city string)
+row format delimited
+fields terminated by ',';
+
+load data local inpath '<path>' into table <table>
+partition by (state='MH' and city='PUNE')
+
+
+subdir are created under user/hive/warehouse/part.DB/student/state='MH' and scans only files under that dir.
+
+
+------- dynamic partitioning
+ by default false.
+ enable it by :
+set hive.exec.dynamic.partition=true;
+set hive.exec.dynamic.partition.mode='nonstrict'
+
+
+create a normal table :
+create table student (name string, rollno int, dept string,state string , city string)
+row format delimited
+fields terminated by ',';
+
+load data local inpath '<path>' into table <tbl> ;
+
+create partitioned table:
+create table student_part (name string, rollno int, dept string)
+partitioned by (state string , city string)
+row format delimited
+fields terminated by ',';  
+
+Insert data :
+insert into student_part 
+partititon(state, city) 
+select * from student;
+
+
+
+----------------------------------------------
+REST -  REpresentational State Transfer
+----------------------------------------------
+BMS app: all the time movies, show times, tkt, filled status is constently updated.
+data stored in web server
+user > req > server > response in form of HTML
+but delays if resp in HTML , coz it loads again and again.
+Hence response in form of strusture like JSON or XML
+but agia prob is we need to create lot of req nd resp methods per entity.
+In such creates obj and set values to obj.
+
+Suppose we want to book IMAX , Avengers, Pune, 10:30 show. API will send an obj containing those values to server.
+Rest is architectuer and approach of communication.
+stateless (when req send contains all info req to make server understand it) client-server (Uniform interface to separate client / server) model
+cacheable 
+
+Feature:
+Simpler than soap
+documentation
+error msgs
+
+methods of rest API:
+C resource create > post
+R resource read > get
+U resource update > put
+D resource delete > delete
+
+install node.js
+npm init
+nmp i express : to install express JS
+npm i joi : validation
+npm i -g nodemon : dont have to restart when chnges are made
+package.json: project info
+
